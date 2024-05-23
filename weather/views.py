@@ -54,16 +54,6 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'weather/login.html', {'form': form})
 
-@login_required
-def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('login')  # Redirect to login page after logging out
-    elif request.method == 'GET':
-        return render(request, 'weather/logout.html')
-    else:
-        return HttpResponseNotAllowed(['GET', 'POST'])
-
 # API view to get current weather
 @api_view(['GET'])
 def current_weather_api(request):
