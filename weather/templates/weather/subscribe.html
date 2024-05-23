@@ -1,0 +1,12 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Subscribe{% endblock %}
+
+{% block content %}
+    <h2>Subscribe</h2>
+    <p>Subscribe to get access to weather forecasts.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Subscribe</button>
+    </form>
+{% endblock %}

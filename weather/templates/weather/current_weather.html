@@ -1,0 +1,23 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Current Weather{% endblock %}
+
+{% block content %}
+    <h1>Current Weather in {{ city }}</h1>
+    <form method="get" action="{% url 'current_weather' %}">
+        <label for="city">Enter city:</label>
+        <input type="text" id="city" name="city" placeholder="e.g. London" required>
+        <button type="submit">Search</button>
+    </form>
+    {% if weather_data %}
+        <div class="weather-info">
+            <p><strong>Temperature:</strong> {{ weather_data.temperature }} °C</p>
+            <p><strong>Humidity:</strong> {{ weather_data.humidity }} %</p>
+            <p><strong>Weather:</strong> {{ weather_data.description }}</p>
+            <p><strong>Wind Speed:</strong> {{ weather_data.wind_speed }} m/s</p>
+            <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="{{ weather_data.description }}">
+        </div>
+    {% else %}
+        <p>Weather data not available.</p>
+    {% endif %}
+{% endblock %}

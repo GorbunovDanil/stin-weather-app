@@ -1,0 +1,21 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Personal Account{% endblock %}
+
+{% block content %}
+    <h2>Personal Account</h2>
+    <p>Welcome, {{ username }}!</p>
+    {% if user.profile.is_subscribed %}
+        <p>You are subscribed to the weather forecast service.</p>
+        <form method="post" action="{% url 'unsubscribe' %}">
+            {% csrf_token %}
+            <button type="submit">Unsubscribe</button>
+        </form>
+    {% else %}
+        <p>You are not subscribed to the weather forecast service.</p>
+        <form method="post" action="{% url 'subscribe' %}">
+            {% csrf_token %}
+            <button type="submit">Subscribe</button>
+        </form>
+    {% endif %}
+{% endblock %}

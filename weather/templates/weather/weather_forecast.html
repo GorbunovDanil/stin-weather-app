@@ -1,0 +1,23 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Weather Forecast{% endblock %}
+
+{% block content %}
+    <h1>Weather Forecast for {{ city }}</h1>
+    {% if forecast_data %}
+        <div class="forecast-info">
+            {% for item in forecast_data %}
+                <div class="forecast-item">
+                    <p><strong>Date and Time:</strong> {{ item.datetime }}</p>
+                    <p><strong>Temperature:</strong> {{ item.temperature }} °C</p>
+                    <p><strong>Humidity:</strong> {{ item.humidity }} %</p>
+                    <p><strong>Weather:</strong> {{ item.description }}</p>
+                    <p><strong>Wind Speed:</strong> {{ item.wind_speed }} m/s</p>
+                    <img src="http://openweathermap.org/img/wn/{{ item.icon }}@2x.png" alt="{{ item.description }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Weather forecast data not available.</p>
+    {% endif %}
+{% endblock %}
