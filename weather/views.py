@@ -49,7 +49,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('current_weather')
     else:
         form = AuthenticationForm()
     return render(request, 'weather/login.html', {'form': form})
