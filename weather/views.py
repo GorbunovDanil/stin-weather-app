@@ -54,6 +54,10 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'weather/login.html', {'form': form})
 
+def logout_view(request):
+    logout(request)
+    return redirect('current_weather')
+
 # API view to get current weather
 @api_view(['GET'])
 def current_weather_api(request):
