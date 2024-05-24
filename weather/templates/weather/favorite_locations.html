@@ -3,17 +3,17 @@
 {% block title %}Favorite Locations{% endblock %}
 
 {% block content %}
-    <h1>Favorite Locations</h1>
+    <h1 class="h1-header">Favorite Locations</h1>
     <form method="post" action="{% url 'add_favorite_location' %}">
         {% csrf_token %}
         <label for="city">Add city:</label>
-        <input type="text" id="city" name="city" placeholder="e.g. London" required>
+        <input type="text" id="city" name="city" placeholder="e.g. Liberec" required>
         <button type="submit">Add</button>
     </form>
-    <h2>Favorite Cities</h2>
+    <h2 class="h2-header">Favorite Cities</h2>
     <ul>
         {% for location in locations %}
-            <li><a href="{% url 'weather_forecast' location.city %}">{{ location.city }}</a></li>
+            <li class="favorite-city"><a href="{% url 'weather_forecast' location.city %}">{{ location.city }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

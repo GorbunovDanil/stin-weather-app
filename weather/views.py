@@ -62,7 +62,7 @@ def logout_view(request):
 # API view to get current weather
 @api_view(['GET'])
 def current_weather_api(request):
-    city = request.GET.get('city', 'London')  # Default to London if no city is provided
+    city = request.GET.get('city', 'Liberec')  # Default to Liberec if no city is provided
     weather_data = get_current_weather(city)
     if weather_data:
         data = {
@@ -80,7 +80,7 @@ def current_weather_api(request):
 # API view to get weather forecast
 @api_view(['GET'])
 def weather_forecast_api(request):
-    city = request.GET.get('city', 'London')  # Default to London if no city is provided
+    city = request.GET.get('city', 'Liberec')  # Default to Liberec if no city is provided
     forecast_data = get_weather_forecast(city)
     if forecast_data:
         forecast_list = []
@@ -107,7 +107,7 @@ def call_api_view(view_func, request, params):
 
 # View to render current weather using the API
 def current_weather(request):
-    city = request.GET.get('city', 'London')  # Default to London if no city is provided
+    city = request.GET.get('city', 'Liberec')  # Default to Liberec if no city is provided
     response = call_api_view(current_weather_api, request, {'city': city})
     if response.status_code == 200:
         weather_data = response.data

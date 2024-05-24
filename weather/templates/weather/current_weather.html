@@ -3,10 +3,10 @@
 {% block title %}Current Weather{% endblock %}
 
 {% block content %}
-    <h1>Current Weather in {{ city }}</h1>
+    <h1 class="h1-header">Current Weather in {{ city }}</h1>
     <form method="get" action="{% url 'current_weather' %}">
         <label for="city">Enter city:</label>
-        <input type="text" id="city" name="city" placeholder="e.g. London" required>
+        <input type="text" id="city" name="city" placeholder="e.g. Liberec" required>
         <button type="submit">Search</button>
     </form>
     {% if weather_data %}

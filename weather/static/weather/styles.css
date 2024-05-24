@@ -53,6 +53,11 @@ nav ul li form {
 
 .container {
     padding: 50px 50px;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .weather-info {
@@ -85,4 +90,77 @@ form input[type="text"] {
 
 form button {
     padding: 5px 10px;
+}
+
+
+.h1-header {
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+.h2-header {
+    margin-bottom: 0px;
+}
+
+.favorite-city {
+    font-size: 18px;
+}
+
+.welcome-text,
+.subscribe-text {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+ .sub-button,
+ .unsub-button,
+ form button {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 22px;
+    padding: 10px 15px;
+    margin-top: 0px;
+    transition: .3s all;
+ }
+
+
+ .sub-button:hover,
+ .unsub-button:hover,
+ form button:hover {
+    background-color: white;
+    color: #4CAF50;
+    cursor: pointer;
+    outline: 1px solid #4CAF50;
+ }
+
+ input {
+    background-color: #abf5ac;
+    color: #384438;
+    border: none;
+    outline: none;
+    border-radius: 3px;
+    width: 200px;
+    height: 30px;
+    margin: 5px;
+    font-size: 16px;
+ }
+
+ form {
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+ }
+
+ form input {
+    width: 100%;
+    margin: 10px 0;
+
+}
+
+ form button {
+    margin-top: 10px;
+    font-size: 18px;
+    padding: 7px 15px;
 }
