@@ -12,7 +12,7 @@ from .serializers import WeatherSerializer, ForecastSerializer
 
 @login_required
 def home(request):
-    return current_weather(request)
+    return render(request, 'weather/home.html')
 
 @login_required
 def personal_account(request):
@@ -53,7 +53,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'weather/login.html', {'form': form})
-    
+
 
 def logout_view(request):
     logout(request)

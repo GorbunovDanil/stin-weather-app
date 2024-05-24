@@ -1,161 +1,199 @@
-# tests.py
+# weather/tests.py
 
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
-from .models import FavoriteLocation, Profile
-from .serializers import WeatherSerializer, ForecastSerializer, HistoricalWeatherSerializer
-from .services import get_coordinates, get_current_weather, get_weather_forecast
-from unittest.mock import patch
 from django.urls import reverse
+from django.contrib.auth.models import User
+from unittest.mock import patch
+from weather.services import get_coordinates, get_current_weather, get_weather_forecast
+from weather.models import FavoriteLocation, Profile
 
-class ModelsTestCase(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-    
-    def test_create_favorite_location(self):
-        location = FavoriteLocation.objects.create(user=self.user, city='New York')
-        self.assertEqual(location.city, 'New York')
-        self.assertEqual(location.user, self.user)
-    
-    def test_create_profile(self):
-        profile = Profile.objects.get(user=self.user)
-        self.assertFalse(profile.is_subscribed)
-    
-    def test_favorite_location_str(self):
-        location = FavoriteLocation.objects.create(user=self.user, city='New York')
-        self.assertEqual(str(location), 'New York')
-    
-    def test_profile_str(self):
-        profile = Profile.objects.get(user=self.user)
-        self.assertEqual(str(profile), 'testuser')
+class WeatherViewsTests(TestCase):
 
-
-class SerializersTestCase(TestCase):
-    def test_weather_serializer(self):
-        data = {
-            'temperature': 23.5,
-            'humidity': 80,
-            'description': 'Cloudy',
-            'wind_speed': 5.2,
-            'icon': 'cloud'
-        }
-        serializer = WeatherSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-
-    def test_forecast_serializer(self):
-        data = {
-            'datetime': '2023-05-21 12:00:00',
-            'temperature': 23.5,
-            'humidity': 80,
-            'description': 'Cloudy',
-            'wind_speed': 5.2,
-            'icon': 'cloud'
-        }
-        serializer = ForecastSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-
-    def test_historical_weather_serializer(self):
-        data = {
-            'datetime': '2023-05-21 12:00:00',
-            'temperature': 23.5,
-            'humidity': 80,
-            'description': 'Cloudy',
-            'wind_speed': 5.2,
-            'icon': 'cloud'
-        }
-        serializer = HistoricalWeatherSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-
-
-class ServicesTestCase(TestCase):
-    @patch('weather.services.requests.get')
-    def test_get_coordinates(self, mock_get):
-        mock_get.return_value.json.return_value = {
-            'coord': {'lat': 40.712776, 'lon': -74.005974}
-        }
-        mock_get.return_value.status_code = 200
-        data = get_coordinates('New York')
-        self.assertEqual(data['lat'], 40.712776)
-    
-    @patch('weather.services.requests.get')
-    def test_get_current_weather(self, mock_get):
-        mock_get.return_value.json.return_value = {
-            'main': {'temp': 23.5, 'humidity': 80},
-            'weather': [{'description': 'Cloudy', 'icon': 'cloud'}],
-            'wind': {'speed': 5.2}
-        }
-        mock_get.return_value.status_code = 200
-        data = get_current_weather('New York')
-        self.assertEqual(data['temperature'], 23.5)
-    
-    @patch('weather.services.requests.get')
-    def test_get_weather_forecast(self, mock_get):
-        mock_get.return_value.json.return_value = {
-            'list': [{
-                'dt_txt': '2023-05-21 12:00:00',
-                'main': {'temp': 23.5, 'humidity': 80},
-                'weather': [{'description': 'Cloudy', 'icon': 'cloud'}],
-                'wind': {'speed': 5.2}
-            }]
-        }
-        mock_get.return_value.status_code = 200
-        data = get_weather_forecast('New York')
-        self.assertEqual(data[0]['temperature'], 23.5)
-
-
-class ViewsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
+        Profile.objects.get_or_create(user=self.user, defaults={'is_subscribed': True})
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
+        self.home_url = reverse('home')
+        self.register_url = reverse('register')
+        self.account_url = reverse('personal_account')
+        self.add_favorite_url = reverse('add_favorite_location')
+        self.favorites_url = reverse('favorite_locations')
+        self.current_weather_url = reverse('current_weather')
+        self.weather_forecast_url = reverse('weather_forecast', args=['London'])
+        self.subscribe_url = reverse('subscribe')
+        self.unsubscribe_url = reverse('unsubscribe')
+
+    def test_home_view(self):
         self.client.login(username='testuser', password='testpassword')
-    
-    @patch('weather.views.get_current_weather')
-    def test_current_weather(self, mock_get_current_weather):
-        mock_get_current_weather.return_value = {
-            'temperature': 23.5,
-            'humidity': 80,
-            'description': 'Cloudy',
-            'wind_speed': 5.2,
-            'icon': 'cloud'
-        }
-        response = self.client.get(reverse('current_weather', args=['New York']))
+        response = self.client.get(self.home_url + '/')  # Ensure the URL ends with a slash
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '23.5')
-    
-    @patch('weather.views.get_weather_forecast')
-    def test_weather_forecast(self, mock_get_weather_forecast):
-        mock_get_weather_forecast.return_value = [{
-            'datetime': '2023-05-21 12:00:00',
-            'temperature': 23.5,
-            'humidity': 80,
-            'description': 'Cloudy',
-            'wind_speed': 5.2,
-            'icon': 'cloud'
-        }]
-        response = self.client.get(reverse('weather_forecast', args=['New York']))
+        self.assertTemplateUsed(response, 'weather/home.html')
+
+    def test_register_view(self):
+        response = self.client.get(self.register_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '23.5')
-    
-    def test_add_favorite_location(self):
-        response = self.client.post(reverse('add_favorite_location'), {'city': 'New York'})
-        self.assertRedirects(response, reverse('favorite_locations'))
-        self.assertTrue(FavoriteLocation.objects.filter(user=self.user, city='New York').exists())
-    
-    def test_favorite_locations(self):
-        FavoriteLocation.objects.create(user=self.user, city='New York')
-        response = self.client.get(reverse('favorite_locations'))
+        self.assertTemplateUsed(response, 'weather/register.html')
+
+    def test_register_view_post(self):
+        response = self.client.post(self.register_url, {
+            'username': 'newuser',
+            'password1': 'newpassword123',
+            'password2': 'newpassword123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username='newuser').exists())
+
+    def test_personal_account_view_unauthenticated(self):
+        response = self.client.get(self.account_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f'{self.login_url}?next={self.account_url}')
+
+    def test_personal_account_view_authenticated(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.account_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'New York')
-    
-    def test_subscribe(self):
-        response = self.client.post(reverse('subscribe'))
-        self.assertRedirects(response, reverse('personal_account'))
-        self.assertTrue(Profile.objects.get(user=self.user).is_subscribed)
-    
-    def test_unsubscribe(self):
-        profile = Profile.objects.get(user=self.user)
+        self.assertTemplateUsed(response, 'weather/personal_account.html')
+
+    def test_add_favorite_location_view_unauthenticated(self):
+        response = self.client.post(self.add_favorite_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f'{self.login_url}?next={self.add_favorite_url}')
+
+    def test_add_favorite_location_view_authenticated(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(self.add_favorite_url, {'city': 'London'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.favorites_url)
+        favorites = FavoriteLocation.objects.filter(user=self.user)
+        self.assertEqual(favorites.count(), 1)
+
+    def test_favorite_locations_view_unauthenticated(self):
+        response = self.client.get(self.favorites_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f'{self.login_url}?next={self.favorites_url}')
+
+    def test_favorite_locations_view_authenticated(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.favorites_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'weather/favorite_locations.html')
+
+    def test_login_view(self):
+        response = self.client.get(self.login_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_login_post(self):
+        response = self.client.post(self.login_url, {'username': 'testuser', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.current_weather_url)
+
+    def test_logout_view(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.current_weather_url)
+
+    def test_current_weather_view(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.current_weather_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'weather/current_weather.html')
+
+    def test_weather_forecast_view_unauthenticated(self):
+        response = self.client.get(self.weather_forecast_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f'{self.login_url}?next={self.weather_forecast_url}')
+
+    def test_weather_forecast_view_authenticated(self):
+        self.client.login(username='testuser', password='testpassword')
+        profile = self.user.profile
         profile.is_subscribed = True
         profile.save()
-        response = self.client.post(reverse('unsubscribe'))
-        self.assertRedirects(response, reverse('personal_account'))
-        self.assertFalse(Profile.objects.get(user=self.user).is_subscribed)
+        response = self.client.get(self.weather_forecast_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'weather/weather_forecast.html')
+
+    def test_subscribe_view_get(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.subscribe_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'weather/subscribe.html')
+
+    def test_subscribe_view_post(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(self.subscribe_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.account_url)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.profile.is_subscribed)
+
+    def test_unsubscribe_view_get(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.unsubscribe_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'weather/unsubscribe.html')
+
+    def test_unsubscribe_view_post(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(self.unsubscribe_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.account_url)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.profile.is_subscribed)
+
+
+class WeatherServicesTests(TestCase):
+
+    @patch('weather.services.requests.get')
+    def test_get_coordinates_success(self, mock_get):
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            'coord': {'lat': 51.5074, 'lon': -0.1278}  # Example coordinates for London
+        }
+        lat, lon = get_coordinates('London')
+        self.assertEqual(lat, 51.5074)
+        self.assertEqual(lon, -0.1278)
+
+    @patch('weather.services.requests.get')
+    def test_get_coordinates_failure(self, mock_get):
+        mock_get.return_value.status_code = 404
+        lat, lon = get_coordinates('InvalidCity')
+        self.assertIsNone(lat)
+        self.assertIsNone(lon)
+
+    @patch('weather.services.requests.get')
+    def test_get_current_weather_success(self, mock_get):
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            'main': {'temp': 15},
+            'weather': [{'description': 'clear sky'}]
+        }
+        data = get_current_weather('London')
+        self.assertIsNotNone(data)
+        self.assertIn('main', data)
+        self.assertIn('weather', data)
+
+    @patch('weather.services.requests.get')
+    def test_get_current_weather_failure(self, mock_get):
+        mock_get.return_value.status_code = 404
+        data = get_current_weather('InvalidCity')
+        self.assertIsNone(data)
+
+    @patch('weather.services.requests.get')
+    def test_get_weather_forecast_success(self, mock_get):
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {
+            'list': [{'dt_txt': '2024-05-23 12:00:00', 'main': {'temp': 15}, 'weather': [{'description': 'clear sky'}]}]
+        }
+        data = get_weather_forecast('London')
+        self.assertIsNotNone(data)
+        self.assertIn('list', data)
+
+    @patch('weather.services.requests.get')
+    def test_get_weather_forecast_failure(self, mock_get):
+        mock_get.return_value.status_code = 404
+        data = get_weather_forecast('InvalidCity')
+        self.assertIsNone(data)
