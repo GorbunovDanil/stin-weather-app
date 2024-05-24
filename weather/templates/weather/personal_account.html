@@ -3,19 +3,19 @@
 {% block title %}Personal Account{% endblock %}
 
 {% block content %}
-    <h2>Personal Account</h2>
-    <p>Welcome, {{ username }}!</p>
+    <h2 class="h1-header">Personal Account</h2>
+    <p class="welcome-text">Welcome, <strong>{{ username }}</strong>!</p>
     {% if user.profile.is_subscribed %}
-        <p>You are subscribed to the weather forecast service.</p>
+        <p class="subscribe-text">You are subscribed to the weather forecast service.</p>
         <form method="post" action="{% url 'unsubscribe' %}">
             {% csrf_token %}
-            <button type="submit">Unsubscribe</button>
+            <button type="submit" class="unsub-button">Unsubscribe</button>
         </form>
     {% else %}
-        <p>You are not subscribed to the weather forecast service.</p>
+        <p class="subscribe-text">You are not subscribed to the weather forecast service.</p>
         <form method="post" action="{% url 'subscribe' %}">
             {% csrf_token %}
-            <button type="submit">Subscribe</button>
+            <button type="submit" class="sub-button">Subscribe</button>
         </form>
     {% endif %}
 {% endblock %}
