@@ -53,6 +53,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'weather/login.html', {'form': form})
+    
 
 def logout_view(request):
     logout(request)

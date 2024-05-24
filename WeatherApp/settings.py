@@ -112,3 +112,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Load Heroku settings
 django_heroku.settings(locals())
 #test
+
+LOGIN_REDIRECT_URL = '/current-weather/'
