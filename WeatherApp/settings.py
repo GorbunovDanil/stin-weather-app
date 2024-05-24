@@ -114,3 +114,4 @@ django_heroku.settings(locals())
 #test
 
 LOGIN_REDIRECT_URL = '/current-weather/'
+LOGOUT_REDIRECT_URL = '/current-weather/'
