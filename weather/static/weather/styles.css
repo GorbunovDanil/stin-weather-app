@@ -61,7 +61,8 @@ nav ul li form {
 }
 
 .weather-info {
-    border: 1px solid #ccc;
+    border: 1px solid #4CAF50;
+    border-radius: 3px;
     padding: 10px;
     width: 300px;
 }
@@ -102,8 +103,36 @@ form button {
     margin-bottom: 0px;
 }
 
+ul {
+    list-style-type: none;
+  }
+  
+
 .favorite-city {
     font-size: 18px;
+    background-color: #4CAF50;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 3px;
+    text-align: center;
+    transition: .3s all;
+    cursor: pointer;
+}
+
+.favorite-city:hover {
+    background-color: #fff;
+    outline: #4CAF50 solid 1px;
+}
+
+.favorite-city a {
+    text-decoration: none;
+    color: #fff;
+    transition: .3s all;
+
+}
+
+.favorite-city:hover a {
+    color: #4CAF50;
 }
 
 .welcome-text,
@@ -163,4 +192,30 @@ form button {
     margin-top: 10px;
     font-size: 18px;
     padding: 7px 15px;
+}
+
+@media only screen and (max-width: 600px) {
+    .header {
+        margin-bottom: 10px;
+    }
+    .h1-header {
+        text-align: center;
+    }
+    .subscribe-text {
+        text-align: center;
+    }
+}
+
+.forecast-item {
+    border: #4CAF50 1px solid;
+    border-radius: 3px;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.forecast-item img {
+    align-items: center;
+    margin: auto;
 }

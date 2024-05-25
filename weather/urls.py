@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('current-weather/', current_weather, name='current_weather'),
     path('weather-forecast/<str:city>/', weather_forecast, name='weather_forecast'),
+    path('weather-forecast/', weather_forecast, name='weather_forecast_default'),
     path('add-favorite/', add_favorite_location, name='add_favorite_location'),
     path('favorites/', favorite_locations, name='favorite_locations'),
     path('account/', personal_account, name='personal_account'),

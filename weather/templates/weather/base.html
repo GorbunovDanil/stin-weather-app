@@ -5,15 +5,17 @@
     <title>{% block title %}Weather App{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'weather/styles.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <header>
-        <h1>Weather App</h1>
+        <h1 class="header">Weather App</h1>
         <nav>
             <ul>
                 <!-- <li><a href="{% url 'home' %}">Home</a></li> -->
                 <li><a href="{% url 'current_weather' %}">Current Weather</a></li>
                 <li><a href="{% url 'favorite_locations' %}">Favorite Locations</a></li>
+                <li><a href="{% url 'weather_forecast' 'Liberec' %}">Weather Forecast</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'personal_account' %}">My Account</a></li>
                     <li>

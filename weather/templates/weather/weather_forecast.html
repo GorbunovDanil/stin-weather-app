@@ -4,6 +4,11 @@
 
 {% block content %}
     <h1>Weather Forecast for {{ city }}</h1>
+    <form method="get" action="{% url 'weather_forecast_default' %}">
+        <label for="city">Enter city:</label>
+        <input type="text" id="city" name="city" placeholder="e.g. Liberec" required>
+        <button type="submit">Search</button>
+    </form>
     {% if forecast_data %}
         <div class="forecast-info">
             {% for item in forecast_data %}

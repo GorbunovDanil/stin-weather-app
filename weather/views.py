@@ -124,7 +124,9 @@ def current_weather(request):
 
 # View to render weather forecast using the API
 @login_required
-def weather_forecast(request, city):
+def weather_forecast(request, city=None):
+    city = request.GET.get('city', 'Liberec')
+
     if not request.user.profile.is_subscribed:
         return redirect('subscribe')
     
